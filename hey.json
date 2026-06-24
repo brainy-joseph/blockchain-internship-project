@@ -1,5 +1,5 @@
 {
   "rewrites": [
-    { "source": "/(.*)", "destination": "https://emergent.host" }
+    { "source": "/(.*)", "destination": "https://spike-anomaly-3d.preview.emergentagent.com" }
   ]
 }
