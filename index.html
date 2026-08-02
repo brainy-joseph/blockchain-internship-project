@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NFT Ticketing & Anti-Scalping Protocol</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: #0b0b14;
+  color: #e2e2f0;
+  line-height: 1.7;
+}
+a { text-decoration: none; }
+
+.hero {
+  text-align: center;
+  padding: 80px 24px 60px;
+  background: linear-gradient(180deg, #12122e 0%, #0b0b14 100%);
+  border-bottom: 1px solid #1e1e2e;
+}
+.hero h1 {
+  font-size: 42px;
+  font-weight: 800;
+  margin-bottom: 16px;
+  letter-spacing: -1px;
+}
+.hero h1 span { color: #00d4ff; }
+.hero p {
+  font-size: 18px;
+  color: #8888aa;
+  max-width: 600px;
+  margin: 0 auto 32px;
+}
+.btn {
+  display: inline-block;
+  background: #6350df;
+  color: #fff;
+  padding: 14px 36px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 16px;
+  transition: 0.2s;
+}
+.btn:hover { background: #7a6af0; transform: translateY(-2px); }
+
+.section {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 60px 24px;
+}
+.section h2 {
+  font-size: 28px;
+  font-weight: 800;
+  margin-bottom: 24px;
+  color: #fff;
+}
+.section h2 span { color: #ff4d9e; }
+
+.problems { display: grid; grid-template-columns: 1fr; gap: 16px; }
+.prob-card {
+  background: #12121e;
+  border: 1px solid #1e1e2e;
+  border-radius: 14px;
+  padding: 24px;
+  border-left: 4px solid #ff4d9e;
+}
+.prob-card h3 { color: #ff4d9e; font-size: 18px; margin-bottom: 8px; }
+.prob-card p { color: #8888aa; font-size: 15px; }
+
+.stats {
+  background: #12121e;
+  border: 1px solid #1e1e2e;
+  border-radius: 14px;
+  padding: 28px;
+  text-align: center;
+  margin-top: 32px;
+}
+.stats .big { font-size: 36px; font-weight: 800; color: #00d4ff; }
+.stats .label { font-size: 14px; color: #666688; margin-top: 4px; }
+
+.solution-list { list-style: none; }
+.solution-list li {
+  background: #12121e;
+  border: 1px solid #1e1e2e;
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+.solution-list li .icon { font-size: 24px; flex-shrink: 0; }
+.solution-list li h4 { color: #00d4ff; font-size: 16px; margin-bottom: 4px; }
+.solution-list li p { color: #8888aa; font-size: 14px; }
+
+.usecases { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.uc-card {
+  background: #12121e;
+  border: 1px solid #1e1e2e;
+  border-radius: 14px;
+  padding: 24px;
+  text-align: center;
+}
+.uc-card .icon { font-size: 40px; margin-bottom: 10px; }
+.uc-card h3 { color: #fff; font-size: 18px; margin-bottom: 8px; }
+.uc-card p { color: #666688; font-size: 13px; }
+
+.impact-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+.impact-table th,
+.impact-table td {
+  text-align: left;
+  padding: 12px 16px;
+  font-size: 14px;
+}
+.impact-table th {
+  color: #00d4ff;
+  font-weight: 700;
+  border-bottom: 2px solid #2a2a4a;
+}
+.impact-table td {
+  color: #8888aa;
+  border-bottom: 1px solid #1e1e2e;
+}
+.impact-table tr:last-child td {
+  color: #fff;
+  font-weight: 700;
+  border-bottom: none;
+}
+.impact-table .saved { color: #00ff88; font-weight: 700; }
+
+.footer-cta {
+  text-align: center;
+  padding: 60px 24px;
+  background: #12121e;
+  border-top: 1px solid #1e1e2e;
+}
+.footer-cta h2 { margin-bottom: 16px; }
+.footer-cta p { color: #8888aa; margin-bottom: 24px; }
+
+@media (max-width: 640px) {
+  .hero h1 { font-size: 28px; }
+  .usecases { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>NFT Ticketing &<br><span>Anti-Scalping Protocol</span></h1>
+  <p>A blockchain-based ticketing system that stops scalpers, eliminates fraud, and returns billions to fans and creators using Ethereum smart contracts.</p>
+  <a href="frontend/index.html" class="btn">Launch Demo App</a>
+</div>
+
+<div class="section">
+  <h2>The <span>Problem</span></h2>
+  <p style="color:#8888aa;margin-bottom:24px;">Traditional ticketing has three massive leaks that cost the industry ~$27 billion every year.</p>
+  
+  <div class="problems">
+    <div class="prob-card">
+      <h3>Scalping & Price Gouging</h3>
+      <p>Bots buy 60%+ of limited tickets and resell at 5–50x face value. FIFA World Cup final tickets hit $20,000+ on StubHub vs. a $1,600 face value. Fans are priced out.</p>
+    </div>
+    <div class="prob-card" style="border-left-color:#00d4ff;">
+      <h3 style="color:#00d4ff;">Fraud & Counterfeits</h3>
+      <p>Fake Pokemon "1st Edition" cards flood eBay. Counterfeit FIFA tickets leave fans stranded at stadium gates. Chargebacks cost the industry ~$4 billion/year.</p>
+    </div>
+    <div class="prob-card" style="border-left-color:#6350df;">
+      <h3 style="color:#6350df;">Zero Creator Royalties</h3>
+      <p>Nintendo, FIFA, and artists receive $0 from secondary resales. An estimated ~$8 billion in potential royalty revenue is lost annually to scalpers and middlemen.</p>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="big">~$27 Billion</div>
+    <div class="label">Lost annually across events, collectibles & entertainment</div>
+  </div>
+</div>
+
+<div class="section" style="border-top:1px solid #1e1e2e;">
+  <h2>The <span>Solution</span></h2>
+  <p style="color:#8888aa;margin-bottom:24px;">We tokenize tickets as programmable NFTs on Ethereum. The smart contract enforces rules that no human or company can bypass.</p>
+  
+  <ul class="solution-list">
+    <li>
+      <span class="icon">🛡️</span>
+      <div>
+        <h4>Price Ceiling Enforcement</h4>
+        <p>The smart contract hard-codes a max resale price (e.g., 120% of face value). Any transaction above the cap is automatically rejected. No scalper can bypass this — not even the event organizer.</p>
+      </div>
+    </li>
+    <li>
+      <span class="icon">🔒</span>
+      <div>
+        <h4>Soulbound Transfer Windows</h4>
+        <p>Tickets are "soulbound" (non-transferable) until a set time before the event — e.g., 48–72 hours. This stops early bot accumulation and forces fair primary sales.</p>
+      </div>
+    </li>
+    <li>
+      <span class="icon">📜</span>
+      <div>
+        <h4>On-Chain Provenance</h4>
+        <p>Every owner, price, and transaction is recorded permanently on the blockchain. Buyers can verify authenticity instantly — no more fake Pokemon cards or counterfeit FIFA tickets.</p>
+      </div>
+    </li>
+    <li>
+      <span class="icon">💰</span>
+      <div>
+        <h4>Programmable Royalty Splits</h4>
+        <p>On every resale, the smart contract auto-distributes revenue: 5% to FIFA, 3% to the host nation, 2% to a fan fund. Creators finally earn from the value they create.</p>
+      </div>
+    </li>
+  </ul>
+</div>
+
+<div class="section" style="border-top:1px solid #1e1e2e;">
+  <h2>Use <span>Cases</span></h2>
+  <div class="usecases">
+    <div class="uc-card">
+      <div class="icon">⚽</div>
+      <h3>FIFA World Cup Final 2026</h3>
+      <p>80,000 seats. Face value 0.05 ETH. Max resale 0.06 ETH. Transfer unlocks 72 hours before kickoff. Prevents the $20,000+ black market.</p>
+    </div>
+    <div class="uc-card">
+      <div class="icon">🎴</div>
+      <h3>Pokemon TCG Championship</h3>
+      <p>Limited 1,000-entry tournament cards. Face value 0.01 ETH. Max resale 0.012 ETH. Nintendo earns royalties on every flip.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="border-top:1px solid #1e1e2e;">
+  <h2>Economic <span>Impact</span></h2>
+  <p style="color:#8888aa;margin-bottom:16px;">If deployed across major sectors, this protocol could recover ~$19 billion annually.</p>
+  
+  <table class="impact-table">
+    <tr>
+      <th>Sector</th>
+      <th>Annual Volume</th>
+      <th>Current Loss</th>
+      <th>Protocol Recovery</th>
+    </tr>
+    <tr>
+      <td>Sports Events (FIFA, NFL, Olympics)</td>
+      <td>$40B</td>
+      <td>$12B</td>
+      <td class="saved">$9B saved + $2B royalties</td>
+    </tr>
+    <tr>
+      <td>Concerts & Festivals</td>
+      <td>$25B</td>
+      <td>$8B</td>
+      <td class="saved">$6B saved + $1.5B royalties</td>
+    </tr>
+    <tr>
+      <td>Collectible Events (Pokemon, Magic)</td>
+      <td>$5B</td>
+      <td>$1.5B</td>
+      <td class="saved">$1.2B saved + $400M royalties</td>
+    </tr>
+    <tr>
+      <td>Conferences & Expos</td>
+      <td>$15B</td>
+      <td>$3B</td>
+      <td class="saved">$2.5B saved</td>
+    </tr>
+    <tr>
+      <td>TOTAL</td>
+      <td>$85B</td>
+      <td>$24.5B</td>
+      <td class="saved">~$19B+ recovered annually</td>
+    </tr>
+  </table>
+</div>
+
+<div class="section" style="border-top:1px solid #1e1e2e;">
+  <h2>Tech <span>Stack</span></h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+    <div class="prob-card" style="border-left-color:#6350df;">
+      <h3 style="color:#6350df;">Blockchain</h3>
+      <p>Ethereum (Sepolia testnet for demo). ERC-721 standard with custom anti-scalping logic.</p>
+    </div>
+    <div class="prob-card" style="border-left-color:#00d4ff;">
+      <h3 style="color:#00d4ff;">Smart Contract</h3>
+      <p>Solidity + OpenZeppelin. Price ceilings, transfer locks, and royalty distribution enforced on-chain.</p>
+    </div>
+    <div class="prob-card" style="border-left-color:#ff4d9e;">
+      <h3 style="color:#ff4d9e;">Frontend</h3>
+      <p>Vanilla HTML/CSS/JS + Ethers.js. No build step. Hosted on GitHub Pages.</p>
+    </div>
+    <div class="prob-card" style="border-left-color:#00ff88;">
+      <h3 style="color:#00ff88;">L2 Scaling</h3>
+      <p>Polygon or Arbitrum for production. Reduces gas fees from $5 to under $0.01 per ticket.</p>
+    </div>
+  </div>
+</div>
+
+<div class="footer-cta">
+  <h2>Try the <span style="color:#00d4ff;">Live Demo</span></h2>
+  <p>Mint a ticket, try to scalp it (and get blocked), buy from the marketplace,<br>and redeem it at the gate. No MetaMask or wallet setup required.</p>
+  <a href="frontend/index.html" class="btn">Launch Demo App</a>
+</div>
+
+</body>
+</html>
