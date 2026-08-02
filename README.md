@@ -42,8 +42,6 @@ Tokenize tickets as programmable NFTs with rules enforced by smart contracts:
 
 ## Project Files
 
-## Files
-
 - `index.html` : Landing page
 - `frontend/index.html` : Demo app
 - `frontend/style.css` : Styles
