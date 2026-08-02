@@ -42,6 +42,8 @@ contract NFTTicket is ERC721, Ownable {
         _safeMint(to, tokenId);
     }
 
+// Anti-scalping: max resale price check
+
     function listTicket(uint256 tokenId, uint256 price) external {
         require(ownerOf(tokenId) == msg.sender, "Not owner");
         require(block.timestamp >= tickets[tokenId].transferOpensAt, "Locked: soulbound");
