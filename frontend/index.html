@@ -1,113 +1,155 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NFT Ticketing & Anti-Scalping Protocol</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NFT Ticketing & Anti-Scalping Protocol</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.override-toggle {
+  background: #1a1a2e;
+  border: 1px solid #2a2a4a;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-size: 13px;
+  color: #8888aa;
+  cursor: pointer;
+  transition: 0.15s;
+  margin-bottom: 12px;
+  display: inline-block;
+}
+.override-toggle:hover { border-color: #ffaa00; }
+.override-toggle.active {
+  background: #ffaa0018;
+  border-color: #ffaa00;
+  color: #ffaa00;
+  font-weight: 700;
+}
+.override-banner {
+  background: #ffaa0018;
+  border: 1px solid #ffaa0040;
+  color: #ffaa00;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  display: none;
+}
+</style>
 </head>
 <body>
-  <div class="wrap">
+<div class="wrap">
 
-    <div class="header">
-      <div class="brand"><span class="b1">NFT</span> <span class="b2">Ticketing</span></div>
-      <div class="wallet-chip" id="walletChip" onclick="toggleWallet()">
-        <span id="walletLabel">Click to Connect Wallet</span>
-      </div>
+  <div class="header">
+    <div class="brand"><span class="b1">NFT</span> <span class="b2">Ticketing</span></div>
+    <div class="wallet-chip" id="walletChip" onclick="toggleWallet()">
+      <span id="walletLabel">Click to Connect Wallet</span>
     </div>
-
-    <div class="toast" id="toast"></div>
-
-    <div class="sec">Events</div>
-    <div class="events">
-      <div class="ev-card">
-        <div class="ic">⚽</div>
-        <div class="nm">FIFA World Cup Final 2026</div>
-        <div class="pr">0.05 ETH</div>
-        <div class="sub">Max Resale: 0.06 ETH (120%)</div>
-        <div class="sub">Transfer unlocks 5 min after mint</div>
-      </div>
-      <div class="ev-card">
-        <div class="ic">🎴</div>
-        <div class="nm">Pokemon TCG Championship</div>
-        <div class="pr">0.01 ETH</div>
-        <div class="sub">Max Resale: 0.012 ETH (120%)</div>
-        <div class="sub">Transfer unlocks 5 min after mint</div>
-      </div>
-    </div>
-
-    <div class="sec">Demo <span>Wallets</span></div>
-    <div class="card">
-      <p style="color:#8888aa;font-size:13px;margin-bottom:12px;">
-        Switch between demo wallets to simulate Organizer, Fan A, and Fan B.
-      </p>
-      <div class="switcher" id="switcher">
-        <div class="sw active" onclick="switchWallet(0)">👤 Organizer (0x71C...9A2F)</div>
-        <div class="sw" onclick="switchWallet(1)">🎫 Fan A (0xA3B...4C1D)</div>
-        <div class="sw" onclick="switchWallet(2)">🎫 Fan B (0xE5F...6G7H)</div>
-      </div>
-      <div style="color:#6666aa;font-size:12px;">
-        Balance: <strong style="color:#00d4ff" id="balance">1.50 ETH</strong> &nbsp;|&nbsp; Role: <strong style="color:#ff4d9e" id="role">Organizer</strong>
-      </div>
-    </div>
-
-    <div id="organizerPanel">
-      <div class="sec">Organizer <span>Panel</span></div>
-      <div class="card">
-        <h2>🎟️ Mint New Ticket</h2>
-        <div class="row3">
-          <select id="mintEvent">
-            <option value="FIFA World Cup Final 2026">FIFA World Cup Final 2026</option>
-            <option value="Pokemon TCG Championship">Pokemon TCG Championship</option>
-          </select>
-          <select id="mintTo">
-            <option value="0x71C7656EC7ab88b098defB751B7401B5f6d8976A">Organizer (0x71C...9A2F)</option>
-            <option value="0xA3B1cD4eF5G6H7I8J9K0L1M2N3O4P5Q6R7S8T9U0">Fan A (0xA3B...4C1D)</option>
-            <option value="0xE5F6G7H8I9J0K1L2M3N4O5P6Q7R8S9T0U1V2W3X4">Fan B (0xE5F...6G7H)</option>
-          </select>
-          <button onclick="mintTicket()">Mint Ticket</button>
-        </div>
-        <p style="color:#555577;font-size:12px;margin-top:10px;">
-          Face value & price cap are auto-set. Transfer window opens in 5 minutes for demo.
-        </p>
-
-        <h3>🔍 Redeem Ticket at Gate</h3>
-        <div class="row2">
-          <input type="number" id="redeemId" placeholder="Enter Ticket Token ID">
-          <button class="cyan" onclick="redeemTicket()">Redeem (Scan Gate)</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="sec">My <span>Tickets</span></div>
-    <div id="myTickets"><div class="empty">Connect a wallet to view your tickets</div></div>
-
-    <div class="sec">Marketplace <span>(Secondary)</span></div>
-    <div id="marketplace"><div class="empty">Connect a wallet to view marketplace listings</div></div>
-
-    <div class="sec">How to <span>Demo</span></div>
-    <div class="card">
-      <div class="how">
-        <strong>1.</strong> You're already connected as <strong>Organizer</strong>. Click <strong>Mint Ticket</strong> to create a FIFA or Pokemon ticket for Fan A.<br>
-        <strong>2.</strong> Switch to <strong>Fan A</strong> wallet. Try listing at <strong>0.1 ETH</strong> (above the 0.06 cap). <strong style="color:#ff4d9e">BLOCKED by smart contract!</strong><br>
-        <strong>3.</strong> Now list it at <strong>0.055 ETH</strong> (within cap). It appears in the Marketplace.<br>
-        <strong>4.</strong> Switch to <strong>Fan B</strong> wallet. Buy the ticket from the marketplace.<br>
-        <strong>5.</strong> Switch back to <strong>Organizer</strong> and redeem the ticket to simulate gate scanning.<br>
-        <strong>6.</strong> Check Fan B's wallet, the ticket now shows <strong style="color:#00ff88">REDEEMED</strong>.
-      </div>
-    </div>
-
-    <div class="sec">About <span>Protocol</span></div>
-    <div class="card">
-      <div class="how">
-        This is a <strong>browser-simulated demo</strong> of an NFT Ticketing & Anti-Scalping Protocol on Ethereum.<br>
-        In production, the same logic runs as a <strong>Solidity smart contract</strong> deployed on Ethereum (or Polygon L2).<br>
-        The anti-scalping rules <strong>price ceilings</strong> and <strong>transfer windows</strong> are enforced <strong>on-chain</strong>.
-      </div>
-    </div>
-
   </div>
 
-  <script src="script.js"></script>
+  <div class="toast" id="toast"></div>
+
+  <div class="sec">Events</div>
+  <div class="events">
+    <div class="ev-card">
+      <div class="ic">⚽</div>
+      <div class="nm">FIFA World Cup Final 2026</div>
+      <div class="pr">0.05 ETH</div>
+      <div class="sub">Max Resale: 0.06 ETH (120%)</div>
+      <div class="sub">Transfer unlocks 5 min after mint</div>
+    </div>
+    <div class="ev-card">
+      <div class="ic">🎴</div>
+      <div class="nm">Pokemon TCG Championship</div>
+      <div class="pr">0.01 ETH</div>
+      <div class="sub">Max Resale: 0.012 ETH (120%)</div>
+      <div class="sub">Transfer unlocks 5 min after mint</div>
+    </div>
+  </div>
+
+  <div class="sec">Demo <span>Wallets</span></div>
+  <div class="card">
+    <p style="color:#8888aa;font-size:13px;margin-bottom:12px;">
+      Switch between demo wallets to simulate Organizer, Fan A, and Fan B.
+    </p>
+    <div class="switcher" id="switcher">
+      <div class="sw active" onclick="switchWallet(0)">👤 Organizer (0x71C...9A2F)</div>
+      <div class="sw" onclick="switchWallet(1)">🎫 Fan A (0xA3B...4C1D)</div>
+      <div class="sw" onclick="switchWallet(2)">🎫 Fan B (0xE5F...6G7H)</div>
+    </div>
+    <div style="color:#6666aa;font-size:12px;">
+      Balance: <strong style="color:#00d4ff" id="balance">1.50 ETH</strong> &nbsp;|&nbsp; Role: <strong style="color:#ff4d9e" id="role">Organizer</strong>
+    </div>
+
+    <div style="margin-top:16px;padding-top:16px;border-top:1px solid #1e1e2e;">
+      <div class="override-toggle" id="overrideToggle" onclick="toggleDemoOverride()">
+        🔒 Demo Override: OFF (Soulbound active)
+      </div>
+      <div class="override-banner" id="overrideBanner">
+        ⚠️ DEMO ONLY: Soulbound lock is disabled. In production, this is enforced by the Solidity smart contract and cannot be bypassed.
+      </div>
+    </div>
+  </div>
+
+  <div id="organizerPanel">
+    <div class="sec">Organizer <span>Panel</span></div>
+    <div class="card">
+      <h2>🎟️ Mint New Ticket</h2>
+      <div class="row3">
+        <select id="mintEvent">
+          <option value="FIFA World Cup Final 2026">FIFA World Cup Final 2026</option>
+          <option value="Pokemon TCG Championship">Pokemon TCG Championship</option>
+        </select>
+        <select id="mintTo">
+          <option value="0x71C7656EC7ab88b098defB751B7401B5f6d8976A">Organizer (0x71C...9A2F)</option>
+          <option value="0xA3B1cD4eF5G6H7I8J9K0L1M2N3O4P5Q6R7S8T9U0">Fan A (0xA3B...4C1D)</option>
+          <option value="0xE5F6G7H8I9J0K1L2M3N4O5P6Q7R8S9T0U1V2W3X4">Fan B (0xE5F...6G7H)</option>
+        </select>
+        <button onclick="mintTicket()">Mint Ticket</button>
+      </div>
+      <p style="color:#555577;font-size:12px;margin-top:10px;">
+        Face value & price cap are auto-set. Transfer window opens in 5 minutes for demo.
+      </p>
+
+      <h3>🔍 Redeem Ticket at Gate</h3>
+      <div class="row2">
+        <input type="number" id="redeemId" placeholder="Enter Ticket Token ID">
+        <button class="cyan" onclick="redeemTicket()">Redeem (Scan Gate)</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec">My <span>Tickets</span></div>
+  <div id="myTickets"><div class="empty">Connect a wallet to view your tickets</div></div>
+
+  <div class="sec">Marketplace <span>(Secondary)</span></div>
+  <div id="marketplace"><div class="empty">Connect a wallet to view marketplace listings</div></div>
+
+  <div class="sec">How to <span>Demo</span></div>
+  <div class="card">
+    <div class="how">
+      <strong>1.</strong> You're already connected as <strong>Organizer</strong>. Click <strong>Mint Ticket</strong> to create a FIFA or Pokemon ticket for Fan A.<br>
+      <strong>2.</strong> Switch to <strong>Fan A</strong> wallet. Try listing at <strong>0.1 ETH</strong> (above the 0.06 cap). <strong style="color:#ff4d9e">BLOCKED by smart contract!</strong><br>
+      <strong>3.</strong> Enable <strong>Demo Override</strong> to bypass the 5-minute soulbound lock (demo only).<br>
+      <strong>4.</strong> Now list it at <strong>0.055 ETH</strong> (within cap). It appears in the Marketplace.<br>
+      <strong>5.</strong> Switch to <strong>Fan B</strong> wallet. Buy the ticket from the marketplace.<br>
+      <strong>6.</strong> Switch back to <strong>Organizer</strong> and redeem the ticket to simulate gate scanning.<br>
+      <strong>7.</strong> Check Fan B's wallet, the ticket now shows <strong style="color:#00ff88">REDEEMED</strong>.
+    </div>
+  </div>
+
+  <div class="sec">About <span>Protocol</span></div>
+  <div class="card">
+    <div class="how">
+      This is a <strong>browser-simulated demo</strong> of an NFT Ticketing & Anti-Scalping Protocol on Ethereum.<br>
+      In production, the same logic runs as a <strong>Solidity smart contract</strong> deployed on Ethereum (or Polygon L2).<br>
+      The anti-scalping rules <strong>price ceilings</strong> and <strong>transfer windows</strong> are enforced <strong>on-chain</strong> and cannot be bypassed by anyone.
+    </div>
+  </div>
+
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>
