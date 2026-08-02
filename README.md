@@ -1,4 +1,4 @@
-# NFT Ticketing & Anti-Scalping Protocol
+# NFT Ticketing & Anti-Scalping Protocol (IIM Lucknow EIC CoE Blockchain Internship Program Project)
 
 **Live Demo:** [brainy-joseph.github.io/blockchain-internship-project](https://brainy-joseph.github.io/blockchain-internship-project)
 
