@@ -31,7 +31,7 @@ Tokenize tickets as programmable NFTs with rules enforced by smart contracts:
 4. **List fairly** within the cap → appears in Marketplace
 5. **Buy** as Fan B
 6. **Redeem** as Organizer at the gate
-7. Check Fan B — ticket shows **REDEEMED**
+7. Check Fan B, ticket shows **REDEEMED**
 
 ## Tech Stack
 
@@ -44,11 +44,11 @@ Tokenize tickets as programmable NFTs with rules enforced by smart contracts:
 
 ## Files
 
-- `index.html` — Landing page
-- `frontend/index.html` — Demo app
-- `frontend/style.css` — Styles
-- `frontend/script.js` — App logic
-- `backend/contracts/NFTTicket.sol` — Smart contract
+- `index.html` : Landing page
+- `frontend/index.html` : Demo app
+- `frontend/style.css` : Styles
+- `frontend/script.js` : App logic
+- `backend/contracts/NFTTicket.sol` : Smart contract
 
 
 
