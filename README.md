@@ -49,9 +49,9 @@ The anti-scalping logic is implemented in Solidity and can be deployed to any EV
 **Contract:** `backend/contracts/NFTTicket.sol`
 
 Key enforcement mechanisms:
-- `require(price <= maxResalePrice)` — blocks scalping at the protocol level
-- `_update()` override — enforces soulbound transfer windows
-- `redeemTicket()` — gate scanning with on-chain verification
+- `require(price <= maxResalePrice)` : blocks scalping at the protocol level
+- `_update()` override : enforces soulbound transfer windows
+- `redeemTicket()` : gate scanning with on-chain verification
 
 **To deploy:** `npx hardhat run scripts/deploy.js --network sepolia`
 
