@@ -13,6 +13,7 @@ let currentWallet = 0;
 let nextTokenId = 1;
 let tickets = [];
 let listings = {};
+let demoOverrideSoulbound = false;
 
 try {
   const saved = localStorage.getItem('nft_ticketing_state');
@@ -21,6 +22,7 @@ try {
     tickets = data.tickets || [];
     listings = data.listings || {};
     nextTokenId = data.nextTokenId || 1;
+    demoOverrideSoulbound = data.demoOverrideSoulbound || false;
     WALLETS[0].balance = data.balances?.[0] ?? 1.50;
     WALLETS[1].balance = data.balances?.[1] ?? 2.00;
     WALLETS[2].balance = data.balances?.[2] ?? 1.20;
@@ -29,7 +31,7 @@ try {
 
 function saveState() {
   localStorage.setItem('nft_ticketing_state', JSON.stringify({
-    tickets, listings, nextTokenId,
+    tickets, listings, nextTokenId, demoOverrideSoulbound,
     balances: WALLETS.map(w => w.balance)
   }));
 }
@@ -64,6 +66,19 @@ function updateWalletUI() {
     el.classList.toggle("active", i === currentWallet);
   });
 
+  const overrideBtn = document.getElementById("overrideToggle");
+  if (overrideBtn) {
+    overrideBtn.classList.toggle("active", demoOverrideSoulbound);
+    overrideBtn.textContent = demoOverrideSoulbound
+      ? "🔓 Demo Override: ON (Soulbound disabled)"
+      : "🔒 Demo Override: OFF (Soulbound active)";
+  }
+
+  const overrideBanner = document.getElementById("overrideBanner");
+  if (overrideBanner) {
+    overrideBanner.style.display = demoOverrideSoulbound ? "block" : "none";
+  }
+
   renderMyTickets();
   renderMarketplace();
 }
@@ -78,6 +93,13 @@ function switchWallet(idx) {
   currentWallet = idx;
   updateWalletUI();
   toast("Switched to " + WALLETS[currentWallet].name, "ok");
+}
+
+function toggleDemoOverride() {
+  demoOverrideSoulbound = !demoOverrideSoulbound;
+  saveState();
+  updateWalletUI();
+  toast(demoOverrideSoulbound ? "Demo Override ON: Soulbound disabled for demo" : "Demo Override OFF: Soulbound rules active", "ok");
 }
 
 function mintTicket() {
@@ -126,7 +148,7 @@ function renderMyTickets() {
   let html = '<div class="ticket-list">';
   for (const t of mine) {
     const now = Date.now();
-    const isLocked = now < t.transferOpensAt;
+    const isLocked = !demoOverrideSoulbound && (now < t.transferOpensAt);
     const isListed = listings[t.tokenId];
     const isRedeemed = t.isRedeemed;
 
@@ -138,7 +160,7 @@ function renderMyTickets() {
       '<div class="id">Token #' + t.tokenId + '</div>' +
       '<div class="name">' + t.icon + ' ' + t.eventName + '</div>' +
       '<div class="meta">Face: ' + t.faceValue + ' ETH • Max Resale: ' + t.maxResalePrice + ' ETH</div>' +
-      '<div class="meta">' + (isLocked ? "Unlocks in " + Math.ceil((t.transferOpensAt - now)/60000) + " min" : "Transfer window open") + '</div>' +
+      '<div class="meta">' + (isLocked ? "Unlocks in " + Math.ceil((t.transferOpensAt - now)/60000) + " min" : (demoOverrideSoulbound ? "Demo Override: Unlocked" : "Transfer window open")) + '</div>' +
       '<span class="tag ' + tagClass + '">' + tagText + '</span>';
 
     if (!isRedeemed && !isListed) {
@@ -172,7 +194,7 @@ function listTicket(tokenId) {
   if (!t) return;
 
   if (t.owner !== w.addr) { toast("You don't own this ticket", "err"); return; }
-  if (Date.now() < t.transferOpensAt) { toast("Transfer window is locked", "err"); return; }
+  if (!demoOverrideSoulbound && Date.now() < t.transferOpensAt) { toast("Transfer window is locked", "err"); return; }
 
   if (price > t.maxResalePrice) {
     toast("ANTI-SCALPING BLOCKED! Max allowed: " + t.maxResalePrice + " ETH. You tried: " + price + " ETH", "err");
