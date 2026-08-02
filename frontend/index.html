@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NFT Ticketing & Anti-Scalping Protocol</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: #0b0b14;
+  color: #e2e2f0;
+  min-height: 100vh;
+  line-height: 1.6;
+}
+.wrap { max-width: 1000px; margin: 0 auto; padding: 24px; }
+
+.header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding-bottom: 20px; border-bottom: 1px solid #1e1e2e;
+  margin-bottom: 28px; flex-wrap: wrap; gap: 12px;
+}
+.brand { font-size: 26px; font-weight: 800; }
+.brand .b1 { color: #00d4ff; }
+.brand .b2 { color: #ff4d9e; }
+.wallet-chip {
+  background: #1a1a2e; border: 1px solid #2a2a4a; border-radius: 10px;
+  padding: 10px 18px; font-size: 13px; color: #8888aa; cursor: pointer;
+  transition: 0.2s;
+}
+.wallet-chip:hover { border-color: #6350df; color: #ccc; }
+.wallet-chip.connected { background: #00d4ff15; border-color: #00d4ff40; color: #00d4ff; }
+.wallet-chip .addr { font-weight: 700; color: #fff; }
+
+.card {
+  background: #12121e; border: 1px solid #1e1e2e; border-radius: 14px;
+  padding: 22px; margin-bottom: 20px;
+}
+.card h2 { font-size: 18px; color: #00d4ff; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+.card h3 { font-size: 15px; color: #ff4d9e; margin: 18px 0 10px; }
+
+.events { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 8px; }
+.ev-card {
+  background: #12121e; border: 1px solid #1e1e2e; border-radius: 14px;
+  padding: 20px; text-align: center; transition: 0.2s;
+}
+.ev-card:hover { border-color: #2a2a4a; }
+.ev-card .ic { font-size: 36px; margin-bottom: 6px; }
+.ev-card .nm { font-weight: 700; font-size: 15px; color: #fff; }
+.ev-card .pr { color: #00d4ff; font-size: 22px; font-weight: 800; margin: 4px 0; }
+.ev-card .sub { color: #666688; font-size: 12px; }
+
+input, select, button {
+  background: #1a1a2e; border: 1px solid #2a2a4a; color: #e2e2f0;
+  padding: 10px 14px; border-radius: 10px; font-size: 14px;
+  font-family: inherit; width: 100%; outline: none;
+}
+input:focus, select:focus { border-color: #6350df; }
+button {
+  background: #6350df; border: none; color: #fff; font-weight: 700;
+  cursor: pointer; transition: 0.15s;
+}
+button:hover { background: #7a6af0; transform: translateY(-1px); }
+button:active { transform: translateY(0); }
+button:disabled { background: #2a2a3e; color: #555; cursor: not-allowed; transform: none; }
+button.pink { background: #ff4d9e; }
+button.pink:hover { background: #ff70b3; }
+button.cyan { background: #00d4ff; color: #0b0b14; }
+button.cyan:hover { background: #33ddff; }
+button.small { padding: 6px 14px; font-size: 12px; width: auto; }
+
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+
+.ticket-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+.tkt {
+  background: #1a1a2e; border: 1px solid #25253e; border-radius: 12px;
+  padding: 16px; position: relative;
+}
+.tkt .id { font-size: 11px; color: #6350df; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+.tkt .name { font-size: 15px; font-weight: 700; color: #fff; margin: 4px 0 2px; }
+.tkt .meta { font-size: 12px; color: #6666aa; }
+.tkt .tag {
+  display: inline-block; padding: 3px 10px; border-radius: 20px;
+  font-size: 11px; font-weight: 700; margin-top: 10px;
+}
+.tag.locked { background: #ff4d9e18; color: #ff4d9e; border: 1px solid #ff4d9e30; }
+.tag.open { background: #00d4ff18; color: #00d4ff; border: 1px solid #00d4ff30; }
+.tag.redeemed { background: #00ff8818; color: #00ff88; border: 1px solid #00ff8830; }
+.tag.sale { background: #6350df18; color: #8a7af0; border: 1px solid #6350df30; }
+
+.mkt-item {
+  display: flex; align-items: center; justify-content: space-between;
+  background: #1a1a2e; border: 1px solid #25253e; border-radius: 12px;
+  padding: 14px 18px; margin-bottom: 10px; gap: 12px;
+}
+.mkt-item .info { flex: 1; min-width: 0; }
+.mkt-item .info .nm { font-weight: 700; font-size: 14px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mkt-item .info .sl { font-size: 11px; color: #6666aa; }
+.mkt-item .price { color: #00d4ff; font-size: 18px; font-weight: 800; white-space: nowrap; }
+.mkt-item button { width: auto; white-space: nowrap; }
+
+.toast {
+  position: fixed; top: 20px; right: 20px; z-index: 999;
+  padding: 14px 20px; border-radius: 12px; font-size: 14px; font-weight: 600;
+  max-width: 380px; transform: translateX(420px); transition: 0.3s ease;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+.toast.show { transform: translateX(0); }
+.toast.ok { background: #00ff8818; border: 1px solid #00ff8840; color: #00ff88; }
+.toast.err { background: #ff4d9e18; border: 1px solid #ff4d9e40; color: #ff4d9e; }
+.toast.info { background: #00d4ff18; border: 1px solid #00d4ff40; color: #00d4ff; }
+
+.empty { text-align: center; color: #444466; padding: 40px; font-size: 14px; }
+
+.sec { font-size: 20px; font-weight: 800; margin: 32px 0 16px; color: #fff; }
+.sec span { color: #00d4ff; }
+
+.switcher { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.sw {
+  background: #1a1a2e; border: 1px solid #2a2a4a; border-radius: 8px;
+  padding: 8px 14px; font-size: 12px; color: #8888aa; cursor: pointer;
+  transition: 0.15s;
+}
+.sw:hover { border-color: #6350df; }
+.sw.active { background: #6350df20; border-color: #6350df; color: #fff; font-weight: 700; }
+
+.how { color: #6666aa; font-size: 13.5px; line-height: 2.2; }
+.how strong { color: #00d4ff; }
+.how a { color: #ff4d9e; text-decoration: none; }
+
+@media (max-width: 640px) {
+  .events { grid-template-columns: 1fr; }
+  .row2, .row3 { grid-template-columns: 1fr; }
+  .mkt-item { flex-direction: column; align-items: stretch; }
+  .mkt-item .price { text-align: center; }
+  .mkt-item button { width: 100%; }
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+.tkt, .mkt-item, .ev-card { animation: popIn 0.3s ease; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <div class="brand"><span class="b1">NFT</span> <span class="b2">Ticketing</span></div>
+    <div class="wallet-chip" id="walletChip" onclick="toggleWallet()">
+      <span id="walletLabel">Click to Connect Wallet</span>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <div class="sec">Events</div>
+  <div class="events">
+    <div class="ev-card">
+      <div class="ic">⚽</div>
+      <div class="nm">FIFA World Cup Final 2026</div>
+      <div class="pr">0.05 ETH</div>
+      <div class="sub">Max Resale: 0.06 ETH (120%)</div>
+      <div class="sub">Transfer unlocks 5 min after mint</div>
+    </div>
+    <div class="ev-card">
+      <div class="ic">🎴</div>
+      <div class="nm">Pokemon TCG Championship</div>
+      <div class="pr">0.01 ETH</div>
+      <div class="sub">Max Resale: 0.012 ETH (120%)</div>
+      <div class="sub">Transfer unlocks 5 min after mint</div>
+    </div>
+  </div>
+
+  <div class="sec">Demo <span>Wallets</span></div>
+  <div class="card">
+    <p style="color:#8888aa;font-size:13px;margin-bottom:12px;">
+      Switch between demo wallets to simulate Organizer, Fan A, and Fan B.
+    </p>
+    <div class="switcher" id="switcher">
+      <div class="sw active" onclick="switchWallet(0)">👤 Organizer (0x71C...9A2F)</div>
+      <div class="sw" onclick="switchWallet(1)">🎫 Fan A (0xA3B...4C1D)</div>
+      <div class="sw" onclick="switchWallet(2)">🎫 Fan B (0xE5F...6G7H)</div>
+    </div>
+    <div style="color:#6666aa;font-size:12px;">
+      Balance: <strong style="color:#00d4ff" id="balance">1.50 ETH</strong> &nbsp;|&nbsp; Role: <strong style="color:#ff4d9e" id="role">Organizer</strong>
+    </div>
+  </div>
+
+  <div id="organizerPanel">
+    <div class="sec">Organizer <span>Panel</span></div>
+    <div class="card">
+      <h2>🎟️ Mint New Ticket</h2>
+      <div class="row3">
+        <select id="mintEvent">
+          <option value="FIFA World Cup Final 2026">FIFA World Cup Final 2026</option>
+          <option value="Pokemon TCG Championship">Pokemon TCG Championship</option>
+        </select>
+        <select id="mintTo">
+          <option value="0x71C7656EC7ab88b098defB751B7401B5f6d8976A">Organizer (0x71C...9A2F)</option>
+          <option value="0xA3B1cD4eF5G6H7I8J9K0L1M2N3O4P5Q6R7S8T9U0">Fan A (0xA3B...4C1D)</option>
+          <option value="0xE5F6G7H8I9J0K1L2M3N4O5P6Q7R8S9T0U1V2W3X4">Fan B (0xE5F...6G7H)</option>
+        </select>
+        <button onclick="mintTicket()">Mint Ticket</button>
+      </div>
+      <p style="color:#555577;font-size:12px;margin-top:10px;">
+        Face value & price cap are auto-set. Transfer window opens in 5 minutes for demo.
+      </p>
+
+      <h3>🔍 Redeem Ticket at Gate</h3>
+      <div class="row2">
+        <input type="number" id="redeemId" placeholder="Enter Ticket Token ID">
+        <button class="cyan" onclick="redeemTicket()">Redeem (Scan Gate)</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec">My <span>Tickets</span></div>
+  <div id="myTickets"><div class="empty">Connect a wallet to view your tickets</div></div>
+
+  <div class="sec">Marketplace <span>(Secondary)</span></div>
+  <div id="marketplace"><div class="empty">Connect a wallet to view marketplace listings</div></div>
+
+  <div class="sec">How to <span>Demo</span></div>
+  <div class="card">
+    <div class="how">
+      <strong>1.</strong> You're already connected as <strong>Organizer</strong>. Click <strong>Mint Ticket</strong> to create a FIFA or Pokemon ticket for Fan A.<br>
+      <strong>2.</strong> Switch to <strong>Fan A</strong> wallet. Try listing at <strong>0.1 ETH</strong> (above the 0.06 cap). <strong style="color:#ff4d9e">BLOCKED by smart contract!</strong><br>
+      <strong>3.</strong> Now list it at <strong>0.055 ETH</strong> (within cap). It appears in the Marketplace.<br>
+      <strong>4.</strong> Switch to <strong>Fan B</strong> wallet. Buy the ticket from the marketplace.<br>
+      <strong>5.</strong> Switch back to <strong>Organizer</strong> and redeem the ticket to simulate gate scanning.<br>
+      <strong>6.</strong> Check Fan B's wallet — the ticket now shows <strong style="color:#00ff88">REDEEMED</strong>.
+    </div>
+  </div>
+
+  <div class="sec">About <span>Protocol</span></div>
+  <div class="card">
+    <div class="how">
+      This is a <strong>browser-simulated demo</strong> of an NFT Ticketing & Anti-Scalping Protocol on Ethereum.<br>
+      In production, the same logic runs as a <strong>Solidity smart contract</strong> deployed on Ethereum (or Polygon L2).<br>
+      The anti-scalping rules — <strong>price ceilings</strong> and <strong>transfer windows</strong> — are enforced <strong>on-chain</strong>.
+    </div>
+  </div>
+
+</div>
+
+<script>
+const WALLETS = [
+  { name: "Organizer", addr: "0x71C7656EC7ab88b098defB751B7401B5f6d8976A", balance: 1.50, isOwner: true },
+  { name: "Fan A",     addr: "0xA3B1cD4eF5G6H7I8J9K0L1M2N3O4P5Q6R7S8T9U0", balance: 2.00, isOwner: false },
+  { name: "Fan B",     addr: "0xE5F6G7H8I9J0K1L2M3N4O5P6Q7R8S9T0U1V2W3X4", balance: 1.20, isOwner: false },
+];
+
+const EVENT_CONFIG = {
+  "FIFA World Cup Final 2026": { faceValue: 0.05, maxResale: 0.06, icon: "⚽" },
+  "Pokemon TCG Championship":  { faceValue: 0.01, maxResale: 0.012, icon: "🎴" },
+};
+
+let currentWallet = 0;
+let nextTokenId = 1;
+let tickets = [];
+let listings = {};
+
+try {
+  const saved = localStorage.getItem('nft_ticketing_state');
+  if (saved) {
+    const data = JSON.parse(saved);
+    tickets = data.tickets || [];
+    listings = data.listings || {};
+    nextTokenId = data.nextTokenId || 1;
+    WALLETS[0].balance = data.balances?.[0] ?? 1.50;
+    WALLETS[1].balance = data.balances?.[1] ?? 2.00;
+    WALLETS[2].balance = data.balances?.[2] ?? 1.20;
+  }
+} catch(e) {}
+
+function saveState() {
+  localStorage.setItem('nft_ticketing_state', JSON.stringify({
+    tickets, listings, nextTokenId,
+    balances: WALLETS.map(w => w.balance)
+  }));
+}
+
+function shortAddr(addr) {
+  return addr.slice(0, 6) + "..." + addr.slice(-4);
+}
+
+function toast(msg, type) {
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.className = "toast " + type;
+  requestAnimationFrame(() => el.classList.add("show"));
+  setTimeout(() => el.classList.remove("show"), 4000);
+}
+
+function updateWalletUI() {
+  const w = WALLETS[currentWallet];
+  const chip = document.getElementById("walletChip");
+  const label = document.getElementById("walletLabel");
+  
+  chip.classList.add("connected");
+  label.innerHTML = '<span class="addr">' + w.name + '</span> — ' + shortAddr(w.addr);
+  
+  document.getElementById("balance").textContent = w.balance.toFixed(3) + " ETH";
+  document.getElementById("role").textContent = w.isOwner ? "Organizer" : "Fan";
+  document.getElementById("role").style.color = w.isOwner ? "#ff4d9e" : "#00d4ff";
+  
+  document.getElementById("organizerPanel").style.display = w.isOwner ? "block" : "none";
+  
+  document.querySelectorAll(".sw").forEach((el, i) => {
+    el.classList.toggle("active", i === currentWallet);
+  });
+  
+  renderMyTickets();
+  renderMarketplace();
+}
+
+function toggleWallet() {
+  currentWallet = (currentWallet + 1) % WALLETS.length;
+  updateWalletUI();
+  toast("Switched to " + WALLETS[currentWallet].name, "ok");
+}
+
+function switchWallet(idx) {
+  currentWallet = idx;
+  updateWalletUI();
+  toast("Switched to " + WALLETS[currentWallet].name, "ok");
+}
+
+function mintTicket() {
+  const w = WALLETS[currentWallet];
+  if (!w.isOwner) { toast("Only Organizer can mint tickets", "err"); return; }
+  
+  const eventName = document.getElementById("mintEvent").value;
+  const toAddr = document.getElementById("mintTo").value;
+  const cfg = EVENT_CONFIG[eventName];
+  
+  let toIdx = WALLETS.findIndex(x => x.addr === toAddr);
+  if (toIdx === -1) { toast("Invalid recipient", "err"); return; }
+  
+  const tokenId = nextTokenId++;
+  const now = Date.now();
+  const unlockAt = now + 5 * 60 * 1000;
+  
+  tickets.push({
+    tokenId,
+    eventName,
+    faceValue: cfg.faceValue,
+    maxResalePrice: cfg.maxResalePrice,
+    transferOpensAt: unlockAt,
+    isRedeemed: false,
+    owner: toAddr,
+    icon: cfg.icon,
+    createdAt: now,
+  });
+  
+  saveState();
+  toast("Ticket #" + tokenId + " minted for " + WALLETS[toIdx].name + "!", "ok");
+  renderMyTickets();
+  renderMarketplace();
+}
+
+function renderMyTickets() {
+  const w = WALLETS[currentWallet];
+  const mine = tickets.filter(t => t.owner === w.addr);
+  const container = document.getElementById("myTickets");
+  
+  if (mine.length === 0) {
+    container.innerHTML = '<div class="empty">' + w.name + " doesn't own any tickets yet</div>";
+    return;
+  }
+  
+  let html = '<div class="ticket-list">';
+  for (const t of mine) {
+    const now = Date.now();
+    const isLocked = now < t.transferOpensAt;
+    const isListed = listings[t.tokenId];
+    const isRedeemed = t.isRedeemed;
+    
+    let tagClass = isRedeemed ? "redeemed" : (isLocked ? "locked" : "open");
+    let tagText = isRedeemed ? "REDEEMED" : (isLocked ? "LOCKED (Soulbound)" : "TRANSFERABLE");
+    if (isListed) { tagClass = "sale"; tagText = "FOR SALE"; }
+    
+    html += '<div class="tkt">' +
+      '<div class="id">Token #' + t.tokenId + '</div>' +
+      '<div class="name">' + t.icon + ' ' + t.eventName + '</div>' +
+      '<div class="meta">Face: ' + t.faceValue + ' ETH • Max Resale: ' + t.maxResalePrice + ' ETH</div>' +
+      '<div class="meta">' + (isLocked ? "Unlocks in " + Math.ceil((t.transferOpensAt - now)/60000) + " min" : "Transfer window open") + '</div>' +
+      '<span class="tag ' + tagClass + '">' + tagText + '</span>';
+    
+    if (!isRedeemed && !isListed) {
+      html += '<div style="margin-top:12px;"><div class="row2">' +
+        '<input type="number" step="0.001" id="price-' + t.tokenId + '" placeholder="Price in ETH" ' + (isLocked ? 'disabled' : '') + '>' +
+        '<button ' + (isLocked ? 'disabled' : '') + ' onclick="listTicket(' + t.tokenId + ')">List for Sale</button>' +
+        '</div></div>';
+    }
+    
+    if (isListed) {
+      html += '<div style="margin-top:10px;color:#8a7af0;font-size:13px;">' +
+        'Listed at ' + listings[t.tokenId].price + ' ETH' +
+        '<button class="small pink" style="margin-left:8px;" onclick="cancelListing(' + t.tokenId + ')">Cancel</button>' +
+        '</div>';
+    }
+    
+    html += '</div>';
+  }
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+function listTicket(tokenId) {
+  const input = document.getElementById("price-" + tokenId);
+  const price = parseFloat(input.value);
+  const w = WALLETS[currentWallet];
+  
+  if (!price || price <= 0) { toast("Enter a valid price", "err"); return; }
+  
+  const t = tickets.find(x => x.tokenId === tokenId);
+  if (!t) return;
+  
+  if (t.owner !== w.addr) { toast("You don't own this ticket", "err"); return; }
+  if (Date.now() < t.transferOpensAt) { toast("Transfer window is locked", "err"); return; }
+  
+  if (price > t.maxResalePrice) {
+    toast("ANTI-SCALPING BLOCKED! Max allowed: " + t.maxResalePrice + " ETH. You tried: " + price + " ETH", "err");
+    return;
+  }
+  
+  listings[tokenId] = { price, seller: w.addr };
+  saveState();
+  toast("Ticket #" + tokenId + " listed at " + price + " ETH!", "ok");
+  renderMyTickets();
+  renderMarketplace();
+}
+
+function cancelListing(tokenId) {
+  const w = WALLETS[currentWallet];
+  if (!listings[tokenId] || listings[tokenId].seller !== w.addr) {
+    toast("You didn't list this ticket", "err"); return;
+  }
+  delete listings[tokenId];
+  saveState();
+  toast("Listing cancelled", "ok");
+  renderMyTickets();
+  renderMarketplace();
+}
+
+function renderMarketplace() {
+  const w = WALLETS[currentWallet];
+  const active = Object.keys(listings).map(Number);
+  const container = document.getElementById("marketplace");
+  
+  if (active.length === 0) {
+    container.innerHTML = '<div class="empty">No active listings</div>';
+    return;
+  }
+  
+  let html = '';
+  for (const id of active) {
+    const t = tickets.find(x => x.tokenId === id);
+    const l = listings[id];
+    if (!t || !l) continue;
+    
+    const isMine = l.seller === w.addr;
+    const sellerName = WALLETS.find(x => x.addr === l.seller)?.name || "Unknown";
+    
+    html += '<div class="mkt-item">' +
+      '<div class="info">' +
+        '<div class="nm">' + t.icon + ' ' + t.eventName + '</div>' +
+        '<div class="sl">Token #' + id + ' • Seller: ' + sellerName + ' (' + shortAddr(l.seller) + ')</div>' +
+      '</div>' +
+      '<div class="price">' + l.price + ' ETH</div>' +
+      (isMine ? '<span style="color:#8a7af0;font-size:12px;font-weight:700;">Your Listing</span>' : '<button onclick="buyTicket(' + id + ')">Buy Now</button>') +
+      '</div>';
+  }
+  container.innerHTML = html;
+}
+
+function buyTicket(tokenId) {
+  const w = WALLETS[currentWallet];
+  const l = listings[tokenId];
+  const t = tickets.find(x => x.tokenId === tokenId);
+  
+  if (!l || !t) { toast("Listing not found", "err"); return; }
+  if (l.seller === w.addr) { toast("You can't buy your own ticket", "err"); return; }
+  if (w.balance < l.price) { toast("Insufficient ETH balance", "err"); return; }
+  
+  const sellerIdx = WALLETS.findIndex(x => x.addr === l.seller);
+  if (sellerIdx !== -1) WALLETS[sellerIdx].balance += l.price;
+  w.balance -= l.price;
+  
+  t.owner = w.addr;
+  delete listings[tokenId];
+  
+  saveState();
+  toast("Bought Ticket #" + tokenId + " for " + l.price + " ETH!", "ok");
+  updateWalletUI();
+}
+
+function redeemTicket() {
+  const w = WALLETS[currentWallet];
+  if (!w.isOwner) { toast("Only Organizer can redeem tickets", "err"); return; }
+  
+  const id = parseInt(document.getElementById("redeemId").value);
+  if (isNaN(id)) { toast("Enter a valid ticket ID", "err"); return; }
+  
+  const t = tickets.find(x => x.tokenId === id);
+  if (!t) { toast("Ticket not found", "err"); return; }
+  if (t.isRedeemed) { toast("Ticket already redeemed", "err"); return; }
+  
+  t.isRedeemed = true;
+  saveState();
+  toast("Ticket #" + id + " redeemed at gate! Entry granted.", "ok");
+  document.getElementById("redeemId").value = "";
+  renderMyTickets();
+}
+
+updateWalletUI();
+
+setInterval(() => {
+  if (tickets.length > 0) renderMyTickets();
+}, 10000);
+</script>
+</body>
+</html>
