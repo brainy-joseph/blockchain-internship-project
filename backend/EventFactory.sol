@@ -54,7 +54,9 @@ contract EventFactory is Ownable {
         emit EventStatusChanged(eventId, events[eventId].isActive);
     }
 
-    
+    function getEventCount() external view returns (uint256) {
+        return events.length;
+    }
 
     function getEvent(uint256 eventId) external view returns (Event memory) {
         require(eventId < events.length, "Event does not exist");
