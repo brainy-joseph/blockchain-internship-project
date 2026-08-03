@@ -6,6 +6,8 @@
 
 A blockchain-based ticketing system that stops scalpers and eliminates fraud using Ethereum smart contracts.
 
+**Team Member : Yusuf Abbas (Leader), 2nd year BTech CSE**
+
 ## The Problem
 
 - **Scalping:** Bots buy tickets and resell at 5-50x price
